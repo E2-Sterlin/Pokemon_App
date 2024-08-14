@@ -15,7 +15,7 @@ class _PokemonSearchScreenState extends State<PokemonSearchScreen> {
   String pokemonSearchName = '';
   List<String> pokemonSearchResults = [];
   List<Pokemon> pokemons = [];
-  String pokemonNumber = '';
+  List number = [];
 
   void getPokemons() async {
     pokemons = await PokemonApi().getPokemon();
@@ -25,12 +25,17 @@ class _PokemonSearchScreenState extends State<PokemonSearchScreen> {
     }
   }
 
-  void getPokemonNumber(String name) {
-    for (var value in pokemons) {
-      if (value.pokemonName == name) {
-        pokemonNumber = value.number.toString();
-        print('pokemonNumber ===> $pokemonNumber');
-      }
+  void getPokemonNumber() async {
+    // for (var value in pokemons) {
+    //   if (value.pokemonName == name) {
+    //     pokemonNumber = value.number.toString();
+    //     print('pokemonNumber ===> $pokemonNumber');
+    //   }
+    // }
+    pokemons = await PokemonApi().getPokemon();
+    for (var pokemonValue in pokemons) {
+      String num = pokemonValue.number!;
+      number.add(num);
     }
   }
 
@@ -38,6 +43,7 @@ class _PokemonSearchScreenState extends State<PokemonSearchScreen> {
   void initState() {
     super.initState();
     getPokemons();
+    getPokemonNumber();
   }
 
   void pokemonSearch(String name) {
@@ -46,7 +52,6 @@ class _PokemonSearchScreenState extends State<PokemonSearchScreen> {
           .where((item) => item.toLowerCase().contains(name.toLowerCase()))
           .toList();
     });
-    getPokemonNumber(name);
   }
 
   @override
@@ -71,12 +76,14 @@ class _PokemonSearchScreenState extends State<PokemonSearchScreen> {
                 itemCount: pokemonSearchResults.length,
                 itemBuilder: (context, index) {
                   return GestureDetector(
-                    onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => const PokemonDetailScreen(
-                        number: '006',
-                        title: 'detail',
-                      ),
-                    )),
+                    onTap: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => const PokemonDetailScreen(
+                          number: '006',
+                          title: 'detail',
+                        ),
+                      ));
+                    },
                     child: ListTile(
                       title: Text(pokemonSearchResults[index]),
                     ),

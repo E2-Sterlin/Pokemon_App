@@ -113,6 +113,18 @@ class PokemonDetailScreen extends StatelessWidget {
                   const SizedBox(
                     height: 10,
                   ),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: List.generate(
+                          snapshot.data!.pokemonDetailsCards.length, (index) {
+                        return Card(
+                          child: Image.network(
+                              snapshot.data!.pokemonDetailsCards[index]),
+                        );
+                      }),
+                    ),
+                  )
                 ],
               ),
             );
