@@ -48,19 +48,14 @@ class PokemonApi {
     return pokemonDetails;
   }
 
-  // Future<List<String>> getPokemonName() async {
-  //   final response = await http
-  //       .get(Uri.parse("https://pokedex.alansantos.dev/api/pokemons.json"));
-  //   final result = json.decode(response.body);
-  //   List<String> pokemonList = [];
-  //   if (response.statusCode == 200) {
-  //     for (var pokemon in result) {
-  //       pokemonList.add(pokemon['name']);
-  //     }
-  //   } else {
-  //     throw Exception('Failed to load Pokemon');
-  //   }
-
-  //   return pokemonList;
-  // }
+  Future<List<Map<String, dynamic>>> getPokemonSearch() async {
+    final response = await http
+        .get(Uri.parse("https://pokedex.alansantos.dev/api/pokemons.json"));
+    final result = json.decode(response.body);
+    List<Map<String, dynamic>> pokemonList = [];
+    for (var e in result) {
+      pokemonList.add(e);
+    }
+    return pokemonList;
+  }
 }

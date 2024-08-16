@@ -29,16 +29,23 @@ class PokemonDetailScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Card(
-                    child: Image.network(snapshot.data!.pokemonDetailsImageUrl),
+                    child: Center(
+                        child: Image.network(
+                            snapshot.data!.pokemonDetailsImageUrl)),
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      const Text('Name'),
+                      const Text(
+                        'Name',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
                       const SizedBox(
                         width: 10,
                       ),
-                      Text(snapshot.data!.pokemonDetailsName),
+                      Text(
+                        snapshot.data!.pokemonDetailsName,
+                      ),
                     ],
                   ),
                   const SizedBox(
@@ -47,7 +54,10 @@ class PokemonDetailScreen extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      const Text('Type'),
+                      const Text(
+                        'Type',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
                       const SizedBox(
                         width: 20,
                       ),
@@ -68,8 +78,12 @@ class PokemonDetailScreen extends StatelessWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('Description'),
+                      const Text(
+                        'Description',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
                       Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: List.generate(
                           snapshot.data!.pokemonDetailsDescriptions.length,
                           (index) {
@@ -86,7 +100,10 @@ class PokemonDetailScreen extends StatelessWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('BaseStats'),
+                      const Text(
+                        'BaseStats',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
                       Column(
                         children: List.generate(
                           snapshot.data!.pokemonDetailsBaseStats.length,

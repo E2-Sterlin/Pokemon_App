@@ -1,97 +1,83 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pokemon_app/api_services/pokemon_api.dart';
-import 'package:pokemon_app/model/pokemon.dart';
 import 'package:pokemon_app/screens/pokemon_detail_screen.dart';
 
-class PokemonSearchScreen extends StatefulWidget {
+class PokemonSearchScreen extends ConsumerStatefulWidget {
   const PokemonSearchScreen({super.key});
 
   @override
-  State<PokemonSearchScreen> createState() => _PokemonSearchScreenState();
+  ConsumerState<PokemonSearchScreen> createState() =>
+      _PokemonSearchScreenState();
 }
 
-class _PokemonSearchScreenState extends State<PokemonSearchScreen> {
-  List<String> pokemonName = [];
-  String pokemonSearchName = '';
-  List<String> pokemonSearchResults = [];
-  List<Pokemon> pokemons = [];
-  List number = [];
+class _PokemonSearchScreenState extends ConsumerState<PokemonSearchScreen> {
+  List<Map<String, dynamic>> pokemonList = [];
+  List<Map<String, dynamic>> searchedPokemon = [];
+  List<Map<String, dynamic>> resultList = [];
 
-  void getPokemons() async {
-    pokemons = await PokemonApi().getPokemon();
-    for (var pokemonValue in pokemons) {
-      String pokeName = pokemonValue.pokemonName!;
-      pokemonName.add(pokeName);
-    }
+  void getList() async {
+    pokemonList = await PokemonApi().getPokemonSearch();
   }
 
-  void getPokemonNumber() async {
-    // for (var value in pokemons) {
-    //   if (value.pokemonName == name) {
-    //     pokemonNumber = value.number.toString();
-    //     print('pokemonNumber ===> $pokemonNumber');
-    //   }
-    // }
-    pokemons = await PokemonApi().getPokemon();
-    for (var pokemonValue in pokemons) {
-      String num = pokemonValue.number!;
-      number.add(num);
-    }
+  void searchPokemon(String searchName) {
+    resultList = pokemonList.where((pokemon) {
+      return pokemon['name'].toLowerCase().contains(searchName.toLowerCase());
+    }).toList();
+
+    setState(() {
+      searchedPokemon = resultList;
+    });
   }
 
   @override
   void initState() {
     super.initState();
-    getPokemons();
-    getPokemonNumber();
-  }
-
-  void pokemonSearch(String name) {
-    setState(() {
-      pokemonSearchResults = pokemonName
-          .where((item) => item.toLowerCase().contains(name.toLowerCase()))
-          .toList();
-    });
+    getList();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('Pokemon Search'),
-          centerTitle: true,
-        ),
-        body: Column(
-          children: [
-            TextField(
-              onChanged: pokemonSearch,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'Search',
-                prefixIcon: Icon(Icons.search),
-              ),
+      appBar: AppBar(
+        title: const Text('Pokemon Search'),
+        centerTitle: true,
+      ),
+      body: Column(
+        children: [
+          TextField(
+            onChanged: (value) {
+              searchPokemon(value);
+            },
+            
+            decoration: const InputDecoration(
+              labelText: 'Search',
+              suffixIcon: Icon(Icons.search),
             ),
-            Expanded(
-              child: ListView.builder(
-                itemCount: pokemonSearchResults.length,
-                itemBuilder: (context, index) {
-                  return GestureDetector(
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: searchedPokemon.length,
+              itemBuilder: (context, index) {
+                return Card(
+                  child: GestureDetector(
                     onTap: () {
                       Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => const PokemonDetailScreen(
-                          number: '006',
-                          title: 'detail',
-                        ),
+                        builder: (context) => PokemonDetailScreen(
+                            number: searchedPokemon[index]['number'],
+                            title: searchedPokemon[index]['name']),
                       ));
                     },
                     child: ListTile(
-                      title: Text(pokemonSearchResults[index]),
+                      title: Text(searchedPokemon[index]['name']),
                     ),
-                  );
-                },
-              ),
+                  ),
+                );
+              },
             ),
-          ],
-        ));
+          ),
+        ],
+      ),
+    );
   }
 }

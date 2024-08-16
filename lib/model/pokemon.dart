@@ -15,6 +15,4 @@ class Pokemon {
         pokemonName: json['name'],
         pokemonImage: json['imageUrl']);
   }
-
-   
 }
