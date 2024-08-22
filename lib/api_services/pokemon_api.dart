@@ -5,20 +5,24 @@ import "package:pokemon_app/model/pokemon_details.dart";
 
 class PokemonApi {
   Future<List<Pokemon>> getPokemon() async {
-    final response = await http
-        .get(Uri.parse("https://pokedex.alansantos.dev/api/pokemons.json"));
-    final result = json.decode(response.body);
     List<Pokemon> pokemonList = [];
-    if (response.statusCode == 200) {
-      for (var pokemon in result) {
-        Pokemon pokemonResult = Pokemon(
-            number: pokemon["number"],
-            pokemonName: pokemon["name"],
-            pokemonImage: pokemon["imageUrl"]);
-        pokemonList.add(pokemonResult);
+    try {
+      final response = await http
+          .get(Uri.parse("https://pokedex.alansantos.dev/api/pokemons.json"));
+      final result = json.decode(response.body);
+
+      if (response.statusCode == 200) {
+        for (var pokemon in result) {
+          Pokemon pokemonResult = Pokemon(
+              number: pokemon["number"],
+              pokemonName: pokemon["name"],
+              pokemonType: pokemon["types"],
+              pokemonImage: pokemon["imageUrl"]);
+          pokemonList.add(pokemonResult);
+        }
       }
-    } else {
-      throw Exception('Failed to load Pokemon');
+    } catch (e) {
+      print('Exception occurs for while getting pokemons $e');
     }
     return pokemonList;
   }
