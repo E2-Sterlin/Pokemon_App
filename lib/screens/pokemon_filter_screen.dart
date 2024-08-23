@@ -16,50 +16,56 @@ class _PokemonFilterState extends ConsumerState<PokemonFilter> {
       appBar: AppBar(
         title: const Text('Pokemon Filter'),
       ),
-      body: Column(
-        children: [
-          SwitchListTile(
-            value: ref.watch(filterProvider.notifier).psychic,
-            onChanged: (value) {
-              setState(() {
-                ref.read(filterProvider.notifier).psychic = value;
-              });
-            },
-            title: const Text('Psychic'),
-          ),
-          SwitchListTile(
-            value: ref.watch(filterProvider.notifier).poison,
-            onChanged: (value) {
-              setState(() {
-                ref.read(filterProvider.notifier).poison = value;
-              });
-            },
-            title: const Text('Poison'),
-          ),
-          SwitchListTile(
-            value: ref.watch(filterProvider.notifier).ground,
-            onChanged: (value) {
-              setState(() {
-                ref.read(filterProvider.notifier).ground = value;
-              });
-            },
-            title: const Text('Ground'),
-          ),
-          SwitchListTile(
-            value: ref.watch(filterProvider.notifier).fire,
-            onChanged: (value) {
-              setState(() {
-                ref.read(filterProvider.notifier).fire = value;
-              });
-            },
-            title: const Text('Fire'),
-          ),
-          ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pop();
+      body: PopScope(
+        canPop: false,
+        onPopInvoked: (didPop) {
+          if (didPop) return;
+        },
+        child: Column(
+          children: [
+            SwitchListTile(
+              value: ref.watch(filterProvider.notifier).psychic,
+              onChanged: (value) {
+                setState(() {
+                  ref.read(filterProvider.notifier).psychic = value;
+                });
               },
-              child: const Text('Filter')),
-        ],
+              title: const Text('Psychic'),
+            ),
+            SwitchListTile(
+              value: ref.watch(filterProvider.notifier).poison,
+              onChanged: (value) {
+                setState(() {
+                  ref.read(filterProvider.notifier).poison = value;
+                });
+              },
+              title: const Text('Poison'),
+            ),
+            SwitchListTile(
+              value: ref.watch(filterProvider.notifier).ground,
+              onChanged: (value) {
+                setState(() {
+                  ref.read(filterProvider.notifier).ground = value;
+                });
+              },
+              title: const Text('Ground'),
+            ),
+            SwitchListTile(
+              value: ref.watch(filterProvider.notifier).fire,
+              onChanged: (value) {
+                setState(() {
+                  ref.read(filterProvider.notifier).fire = value;
+                });
+              },
+              title: const Text('Fire'),
+            ),
+            ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Filter')),
+          ],
+        ),
       ),
     );
   }

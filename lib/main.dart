@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pokemon_app/api_services/pokemon_api.dart';
 import 'package:pokemon_app/model/pokemon.dart';
+import 'package:pokemon_app/model/pokemon_details.dart';
 import 'package:pokemon_app/screens/pokemon_home_screen.dart';
 
 final apiProvider = Provider<PokemonApi>((ref) => PokemonApi());
@@ -11,6 +12,10 @@ final pokemonDataProvider = FutureProvider<List<Pokemon>>((ref) {
 final pokemonSearchProvider = FutureProvider<List<Map<String, dynamic>>>((ref) {
   return ref.read(apiProvider).getPokemonSearch();
 });
+
+// final pokemonDetailProvider = FutureProvider<PokemonDetails>(
+//     (ref) => ref.read(apiProvider).getPokemonDetails(number));
+
 void main() {
   runApp(const ProviderScope(child: MyApp()));
 }

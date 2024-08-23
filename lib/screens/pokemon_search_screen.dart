@@ -18,48 +18,50 @@ class _PokemonSearchScreenState extends ConsumerState<PokemonSearchScreen> {
   List<Map<String, dynamic>> searchedPokemon = [];
   List<Map<String, dynamic>> resultList = [];
   List<Map<String, dynamic>> filteredList = [];
-  List<String> filterList = [];
-  var isFilterPoison = false;
-  var isFilterPsychic = false;
-  var isFilterGround = false;
-  var isFilterFire = false;
+  Set<String> filterList = {};
 
   void getList() async {
     pokemonList = await PokemonApi().getPokemonSearch();
   }
 
-  void getFilterList() {
-    if (isFilterFire) {
-      filterList.add('Fire');
+  void filterPokemon() {
+    List<Map<String, dynamic>> filteredPok = [];
+    bool isFilter = false;
+    for (var pokemon in pokemonList) {
+      List pokTypes = pokemon['types'];
+      for (int i = 0; i < pokTypes.length; i++) {
+        for (int j = 0; j < filterList.length; j++) {
+          if (pokTypes[i] == filterList.elementAt(j)) {
+            isFilter = true;
+          }
+        }
+      }
+      if (isFilter) {
+        filteredPok.add(pokemon);
+        isFilter = false;
+      }
     }
-    if (isFilterGround) {
-      filterList.add('Ground');
-    }
-    if (isFilterPoison) {
-      filterList.add('Poison');
-    }
-    if (isFilterPsychic) {
-      filterList.add('Psychic');
-    }
-    print('filterList == $filterList');
+
+    setState(() {
+      if (filteredPok.isNotEmpty) {
+        filteredList = filteredPok;
+      } else {
+        filteredList = pokemonList;
+      }
+    });
   }
 
   void searchPokemon(String searchName) {
-    //  filterList = pokemonList.where((filterPokemon){
-    //   return filterPokemon['types']
-    //  })
-
-    resultList = pokemonList.where((pokemon) {
+    filterPokemon();
+    resultList = filteredList.where((pokemon) {
       return pokemon['name'].toLowerCase().contains(searchName.toLowerCase());
     }).toList();
 
     setState(() {
-      print('resultList ==> $resultList');
       searchedPokemon = resultList;
+      filterList = {};
     });
   }
-
-  void dummyMethod() {}
 
   @override
   void initState() {
@@ -69,11 +71,31 @@ class _PokemonSearchScreenState extends ConsumerState<PokemonSearchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    isFilterPoison = ref.watch(filterProvider.notifier).poison;
-    isFilterPsychic = ref.watch(filterProvider.notifier).psychic;
-    isFilterGround = ref.watch(filterProvider.notifier).ground;
-    isFilterFire = ref.watch(filterProvider.notifier).fire;
-
+    Widget showSearchedPokemon = Expanded(
+      child: ListView.builder(
+        itemCount: searchedPokemon.length,
+        itemBuilder: (context, index) {
+          {
+            return Card(
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => PokemonDetailScreen(
+                          number: searchedPokemon[index]['number'],
+                          title: searchedPokemon[index]['name']),
+                    ),
+                  );
+                },
+                child: ListTile(
+                  title: Text(searchedPokemon[index]['name']),
+                ),
+              ),
+            );
+          }
+        },
+      ),
+    );
     return Scaffold(
       appBar: AppBar(
         title: const Text('Pokemon Search'),
@@ -92,35 +114,30 @@ class _PokemonSearchScreenState extends ConsumerState<PokemonSearchScreen> {
         children: [
           TextField(
             onChanged: (value) {
+              if (ref.read(filterProvider.notifier).fire) {
+                filterList.add('Fire');
+              }
+              if (ref.read(filterProvider.notifier).ground) {
+                filterList.add('Ground');
+              }
+              if (ref.read(filterProvider.notifier).poison) {
+                filterList.add('Poison');
+              }
+              if (ref.read(filterProvider.notifier).psychic) {
+                filterList.add('Psychic');
+              }
               searchPokemon(value);
-              //  print(filterMap);
             },
             decoration: const InputDecoration(
               labelText: 'Search',
               suffixIcon: Icon(Icons.search),
             ),
           ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: searchedPokemon.length,
-              itemBuilder: (context, index) {
-                return Card(
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => PokemonDetailScreen(
-                            number: searchedPokemon[index]['number'],
-                            title: searchedPokemon[index]['name']),
-                      ));
-                    },
-                    child: ListTile(
-                      title: Text(searchedPokemon[index]['name']),
-                    ),
-                  ),
-                );
-              },
+          if (searchedPokemon.isEmpty)
+            const Center(
+              child: Text('No Pokemon found'),
             ),
-          ),
+          showSearchedPokemon,
         ],
       ),
     );

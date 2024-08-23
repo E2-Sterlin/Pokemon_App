@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pokemon_app/api_services/pokemon_api.dart';
+import 'package:pokemon_app/main.dart';
 
-class PokemonDetailScreen extends StatelessWidget {
+class PokemonDetailScreen extends ConsumerWidget {
   const PokemonDetailScreen({
     super.key,
     required this.number,
@@ -11,8 +13,9 @@ class PokemonDetailScreen extends StatelessWidget {
   final String title;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final futureList = PokemonApi().getPokemonDetails(number);
+    // final futureList = ref.watch(pokemonDetailProvider);
     return Scaffold(
       appBar: AppBar(
         title: Text(title),
@@ -135,9 +138,37 @@ class PokemonDetailScreen extends StatelessWidget {
                     child: Row(
                       children: List.generate(
                           snapshot.data!.pokemonDetailsCards.length, (index) {
-                        return Card(
-                          child: Image.network(
-                              snapshot.data!.pokemonDetailsCards[index]),
+                        final imageUrl =
+                            snapshot.data!.pokemonDetailsCards[index];
+                        return GestureDetector(
+                          onTap: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return AlertDialog(
+                                  content: Image.network(
+                                    imageUrl,
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                          child: Card(
+                            child: Image.network(
+                              imageUrl,
+                              loadingBuilder:
+                                  (context, child, loadingProgress) {
+                                if (loadingProgress == null) {
+                                  return child;
+                                } else {
+                                  return const CircularProgressIndicator();
+                                }
+                              },
+                              errorBuilder: (context, error, stackTrace) {
+                                return const Text('Error');
+                              },
+                            ),
+                          ),
                         );
                       }),
                     ),
